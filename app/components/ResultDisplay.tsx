@@ -10,6 +10,7 @@ interface ResultDisplayProps {
   imageDataUrl?: string;
   plantUmlText?: string;
   plantUmlImageUrl?: string;
+  diagramType?: string;
 }
 
 export default function ResultDisplay({
@@ -18,8 +19,10 @@ export default function ResultDisplay({
   fileType,
   imageDataUrl,
   plantUmlText,
-  plantUmlImageUrl
+  plantUmlImageUrl,
+  diagramType = 'plantuml'
 }: ResultDisplayProps) {
+  const diagramLabel = diagramType === 'mermaid' ? 'Mermaid' : 'PlantUML';
   return (
     <Box sx={{ mt: 2, p: 3, bgcolor: 'success.light', borderRadius: 2, width: '100%', maxWidth: 800 }}>
       <Alert severity="success" sx={{ mb: 2 }}>
@@ -52,7 +55,7 @@ export default function ResultDisplay({
       {plantUmlText && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="h6" gutterBottom>
-            Generated PlantUML Code:
+            Generated {diagramLabel} Code:
           </Typography>
           <Box 
             component="pre" 
@@ -72,12 +75,12 @@ export default function ResultDisplay({
       {plantUmlImageUrl && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="h6" gutterBottom>
-            PlantUML Diagram:
+            {diagramLabel} Diagram:
           </Typography>
           <Box
             component="img"
             src={plantUmlImageUrl}
-            alt="PlantUML Diagram"
+            alt={`${diagramLabel} Diagram`}
             sx={{
               maxWidth: '100%',
               height: 'auto',

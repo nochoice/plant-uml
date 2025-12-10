@@ -1,0 +1,11 @@
+.git
+.github
+node_modules
+.DS_Store
+.env
+.env.local
+*.log
+npm-debug.log*
+.react-router
+build
+README.md
