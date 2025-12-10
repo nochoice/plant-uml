@@ -1,0 +1,1 @@
+export { generateZenUmlImageUrl } from './encoder';

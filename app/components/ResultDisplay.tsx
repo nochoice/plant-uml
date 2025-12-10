@@ -22,7 +22,7 @@ export default function ResultDisplay({
   plantUmlImageUrl,
   diagramType = 'plantuml'
 }: ResultDisplayProps) {
-  const diagramLabel = diagramType === 'mermaid' ? 'Mermaid' : 'PlantUML';
+  const diagramLabel = diagramType === 'mermaid' ? 'Mermaid' : diagramType === 'zenuml' ? 'ZenUML' : 'PlantUML';
   return (
     <Box sx={{ mt: 2, p: 3, bgcolor: 'success.light', borderRadius: 2, width: '100%', maxWidth: 800 }}>
       <Alert severity="success" sx={{ mb: 2 }}>

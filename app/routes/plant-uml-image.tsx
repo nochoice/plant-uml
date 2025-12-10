@@ -10,8 +10,10 @@ import { Link as ReactRouterLink, Form, useActionData, useNavigation } from 'rea
 import type { Route } from './+types/plant-uml-image';
 import { analyzeImageWithOpenAI } from '~/domains/openAI';
 import { analyzeImageForMermaid } from '~/domains/openAI/analyzeMermaid';
+import { analyzeImageForZenUml } from '~/domains/openAI/analyzeZenUml';
 import { generatePlantUmlImageUrl } from '~/domains/plantUml';
 import { generateMermaidImageUrl } from '~/domains/mermaid';
+import { generateZenUmlImageUrl } from '~/domains/zenUml';
 import ProcessStepper from '~/components/ProcessStepper';
 import UploadForm from '~/components/UploadForm';
 import LoadingIndicator from '~/components/LoadingIndicator';
@@ -49,6 +51,14 @@ export async function action({ request }: Route.ActionArgs) {
       diagramText = result.diagramText;
       diagramImageUrl = generateMermaidImageUrl(diagramText);
     }
+  } else if (diagramType === 'zenuml') {
+    const result = await analyzeImageForZenUml(file);
+    if (result.error) {
+      error = result.error;
+    } else {
+      diagramText = result.diagramText;
+      diagramImageUrl = generateZenUmlImageUrl(diagramText);
+    }
   } else {
     const result = await analyzeImageWithOpenAI(file);
     if (result.error) {
@@ -80,7 +90,7 @@ export default function PlantUmlImage() {
   const navigation = useNavigation();
   const [selectedFile, setSelectedFile] = React.useState<string | null>(null);
   const [activeStep, setActiveStep] = React.useState(0);
-  const [diagramType, setDiagramType] = React.useState<'plantuml' | 'mermaid'>('plantuml');
+  const [diagramType, setDiagramType] = React.useState<'plantuml' | 'mermaid' | 'zenuml'>('plantuml');
 
   const isSubmitting = navigation.state === 'submitting';
 
@@ -135,6 +145,9 @@ export default function PlantUmlImage() {
             </ToggleButton>
             <ToggleButton value="mermaid" aria-label="mermaid">
               Mermaid
+            </ToggleButton>
+            <ToggleButton value="zenuml" aria-label="zenuml">
+              ZenUML
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
