@@ -58,12 +58,41 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function PlantUmlImage() {
   const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
   const [selectedFile, setSelectedFile] = React.useState<string | null>(null);
+  const [activeStep, setActiveStep] = React.useState(0);
+
+  const isSubmitting = navigation.state === 'submitting';
+  const isLoading = navigation.state === 'loading';
+
+  const steps = [
+    'Select Image',
+    'Upload & Process',
+    'AI Analysis',
+    'Generate Diagram'
+  ];
+
+  React.useEffect(() => {
+    if (isSubmitting) {
+      setActiveStep(1);
+      const timer1 = setTimeout(() => setActiveStep(2), 500);
+      const timer2 = setTimeout(() => setActiveStep(3), 2000);
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
+    } else if (actionData?.success) {
+      setActiveStep(4);
+    } else if (!selectedFile) {
+      setActiveStep(0);
+    }
+  }, [isSubmitting, actionData, selectedFile]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file.name);
+      setActiveStep(1);
     }
   };
 
@@ -82,11 +111,22 @@ export default function PlantUmlImage() {
           PlantUML Image Upload
         </Typography>
 
+        <Box sx={{ width: '100%', maxWidth: 600, mb: 4 }}>
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Box>
+
         <Form method="post" encType="multipart/form-data">
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, my: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, my: 3, minWidth: 300 }}>
             <Button
               variant="contained"
               component="label"
+              disabled={isSubmitting}
             >
               Select Image
               <input
@@ -99,33 +139,45 @@ export default function PlantUmlImage() {
             </Button>
             
             {selectedFile && (
-              <Typography variant="body2" color="text.secondary">
+              <Alert severity="info" sx={{ alignItems: 'center' }}>
                 Selected: {selectedFile}
-              </Typography>
+              </Alert>
             )}
 
             <Button 
               type="submit" 
               variant="contained" 
               color="primary"
-              disabled={!selectedFile}
+              disabled={!selectedFile || isSubmitting}
+              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              Upload and Check
+              {isSubmitting ? 'Processing...' : 'Upload and Analyze'}
             </Button>
           </Box>
         </Form>
 
+        {isSubmitting && (
+          <Box sx={{ width: '100%', maxWidth: 600, mt: 2 }}>
+            <LinearProgress />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
+              {activeStep === 1 && 'Uploading image...'}
+              {activeStep === 2 && 'Analyzing with AI...'}
+              {activeStep === 3 && 'Generating PlantUML diagram...'}
+            </Typography>
+          </Box>
+        )}
+
         {actionData?.error && (
-          <Typography color="error" sx={{ mt: 2 }}>
+          <Alert severity="error" sx={{ mt: 2, maxWidth: 600 }}>
             {actionData.error}
-          </Typography>
+          </Alert>
         )}
 
         {actionData?.success && (
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'success.light', borderRadius: 1, width: '100%', maxWidth: 800 }}>
-            <Typography variant="h6" gutterBottom>
+          <Box sx={{ mt: 2, p: 3, bgcolor: 'success.light', borderRadius: 2, width: '100%', maxWidth: 800 }}>
+            <Alert severity="success" sx={{ mb: 2 }}>
               Image analyzed successfully!
-            </Typography>
+            </Alert>
             <Typography variant="body2">File name: {actionData.fileName}</Typography>
             <Typography variant="body2">File size: {(actionData.fileSize / 1024).toFixed(2)} KB</Typography>
             <Typography variant="body2">File type: {actionData.fileType}</Typography>
