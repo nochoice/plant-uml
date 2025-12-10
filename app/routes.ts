@@ -5,4 +5,5 @@ export default [
   route('/about', 'routes/about.tsx'),
   route('/ooo', 'routes/ooo+/index.tsx'),
   route('/ooo/ufff', 'routes/ooo+/ufff.tsx'),
+  route('/plant-uml-image', 'routes/plant-uml-image.tsx'),
 ] satisfies RouteConfig;

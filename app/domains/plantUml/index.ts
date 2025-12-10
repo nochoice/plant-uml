@@ -1,0 +1,1 @@
+export { generatePlantUmlImageUrl } from './encoder';

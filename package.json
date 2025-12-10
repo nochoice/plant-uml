@@ -17,6 +17,7 @@
     "@react-router/node": "latest",
     "@react-router/serve": "latest",
     "isbot": "latest",
+    "plantuml-encoder": "^1.4.0",
     "react": "latest",
     "react-dom": "latest",
     "react-router": "latest"
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@react-router/dev": "latest",
     "@types/node": "latest",
+    "@types/plantuml-encoder": "^1.4.2",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "typescript": "latest",
